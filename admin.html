@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#E31837">
+  <title>ตั้งค่ากะการทำงาน | Makro</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            makro: { DEFAULT: '#E31837', dark: '#B8112B', light: '#FDECEF' },
+            ink: '#111827',
+            surface: '#F3F4F6'
+          },
+          fontFamily: { sans: ['"Noto Sans Thai"', 'system-ui', 'sans-serif'] }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface text-ink font-sans antialiased min-h-screen">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-20 bg-makro text-white shadow">
+    <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+      <div class="flex items-center gap-3">
+        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-lg font-bold text-makro">M</div>
+        <div class="leading-tight">
+          <div class="text-base font-semibold">ตารางกะพนักงาน</div>
+          <div class="text-xs text-white/80">Makro Shift Planner</div>
+        </div>
+      </div>
+      <nav class="flex gap-1 text-sm">
+        <a href="index.html" class="rounded-lg px-3 py-1.5 hover:bg-white/10">ตารางงาน</a>
+        <a href="admin.html" class="rounded-lg bg-white/20 px-3 py-1.5 font-medium">ตั้งค่ากะ</a>
+        <a href="period.html" class="rounded-lg px-3 py-1.5 hover:bg-white/10">รอบเดือน</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-3xl px-4 py-6">
+
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 class="text-xl font-bold">ตั้งค่ารูปแบบกะการทำงาน</h1>
+        <p class="mt-1 text-sm text-gray-500">รูปแบบกะที่ตั้งไว้ที่นี่ จะแสดงเป็นตัวเลือกใน Dropdown ของหน้าตารางงานทันที</p>
+      </div>
+      <button id="add-shift-btn" type="button"
+              class="shrink-0 rounded-lg bg-makro px-4 py-2.5 text-sm font-medium text-white hover:bg-makro-dark">
+        + เพิ่มรูปแบบกะ
+      </button>
+    </div>
+
+    <!-- Shift list -->
+    <ul id="shift-list" class="mt-5 space-y-2"></ul>
+
+    <!-- Data tools -->
+    <section class="mt-8 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+      <h2 class="text-sm font-semibold">จัดการข้อมูล</h2>
+      <p class="mt-1 text-xs text-gray-500">
+        ข้อมูลเก็บในเบราว์เซอร์ของอุปกรณ์นี้เท่านั้น หากต้องการย้ายเครื่องหรือกันข้อมูลหาย ให้ดาวน์โหลดไฟล์สำรองไว้
+      </p>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button id="export-btn" type="button" class="rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-surface">ดาวน์โหลดไฟล์สำรอง (.json)</button>
+        <label class="cursor-pointer rounded-lg border border-gray-300 px-3 py-2 text-sm hover:bg-surface">
+          นำเข้าไฟล์สำรอง
+          <input id="import-file" type="file" accept="application/json,.json" class="hidden">
+        </label>
+        <button id="reset-btn" type="button" class="rounded-lg border border-makro/40 px-3 py-2 text-sm text-makro hover:bg-makro-light">รีเซ็ตรูปแบบกะเป็นค่าเริ่มต้น</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Add / Edit dialog -->
+  <dialog id="shift-dialog" class="w-[calc(100%-2rem)] max-w-md rounded-2xl p-0 shadow-xl backdrop:bg-black/40">
+    <form id="shift-form" class="space-y-4 p-5">
+      <h2 id="dialog-title" class="text-lg font-bold">เพิ่มรูปแบบกะ</h2>
+
+      <label class="block">
+        <span class="mb-1 block text-sm font-medium">ชื่อกะ</span>
+        <input id="f-name" type="text" required maxlength="40" placeholder="เช่น กะเช้า"
+               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-makro/40 focus:border-makro">
+      </label>
+
+      <label class="flex items-center gap-2 text-sm">
+        <input id="f-off" type="checkbox" class="h-4 w-4 rounded border-gray-300 accent-[#E31837]">
+        เป็นวันหยุด (OFF) — ไม่ต้องระบุเวลา
+      </label>
+
+      <div id="f-time-group">
+        <div class="grid grid-cols-2 gap-3">
+          <label class="block">
+            <span class="mb-1 block text-sm font-medium">เวลาเริ่ม</span>
+            <input id="f-start" type="time" required
+                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-makro/40 focus:border-makro">
+          </label>
+          <label class="block">
+            <span class="mb-1 block text-sm font-medium">เวลาสิ้นสุด</span>
+            <input id="f-end" type="time" required
+                   class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-makro/40 focus:border-makro">
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <span class="mb-2 block text-sm font-medium">สีป้ายกะ</span>
+        <div class="flex flex-wrap items-center gap-2">
+          <div id="swatches" class="flex flex-wrap gap-2"></div>
+          <input id="f-color" type="color" value="#E31837" aria-label="เลือกสีเอง"
+                 class="h-8 w-10 cursor-pointer rounded border border-gray-300 bg-white p-0.5">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button id="cancel-btn" type="button" class="rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-surface">ยกเลิก</button>
+        <button type="submit" class="rounded-lg bg-makro px-4 py-2 text-sm font-medium text-white hover:bg-makro-dark">บันทึก</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Toast -->
+  <div id="toast" role="status" aria-live="polite"
+       class="pointer-events-none fixed bottom-6 left-1/2 -translate-x-1/2 translate-y-2 rounded-full bg-ink px-4 py-2 text-sm text-white opacity-0 shadow-lg transition-all duration-300"></div>
+
+  <script src="js/store.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
