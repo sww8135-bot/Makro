@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#E31837">
+  <title>ตารางเวลาและกะการทำงาน | Makro</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            makro: { DEFAULT: '#E31837', dark: '#B8112B', light: '#FDECEF' },
+            ink: '#111827',
+            surface: '#F3F4F6'
+          },
+          fontFamily: { sans: ['"Noto Sans Thai"', 'system-ui', 'sans-serif'] }
+        }
+      }
+    };
+  </script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #fff; }
+      .day-row { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body class="bg-surface text-ink font-sans antialiased min-h-screen">
+
+  <!-- Header -->
+  <header class="no-print sticky top-0 z-20 bg-makro text-white shadow">
+    <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+      <div class="flex items-center gap-3">
+        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-lg font-bold text-makro">M</div>
+        <div class="leading-tight">
+          <div class="text-base font-semibold">ตารางกะพนักงาน</div>
+          <div class="text-xs text-white/80">Makro Shift Planner</div>
+        </div>
+      </div>
+      <nav class="flex gap-1 text-sm">
+        <a href="index.html" class="rounded-lg bg-white/20 px-3 py-1.5 font-medium">ตารางงาน</a>
+        <a href="admin.html" class="rounded-lg px-3 py-1.5 hover:bg-white/10">ตั้งค่ากะ</a>
+        <a href="period.html" class="rounded-lg px-3 py-1.5 hover:bg-white/10">รอบเดือน</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-5xl px-4 py-6">
+
+    <!-- Controls -->
+    <section class="no-print rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div class="flex items-center gap-2">
+          <button id="prev-month" type="button" aria-label="เดือนก่อนหน้า"
+                  class="h-10 w-10 rounded-lg border border-gray-300 text-lg hover:bg-surface">&lsaquo;</button>
+          <select id="month-select" aria-label="เลือกเดือน"
+                  class="h-10 flex-1 rounded-lg border border-gray-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-makro/40 md:w-40 md:flex-none"></select>
+          <select id="year-select" aria-label="เลือกปี"
+                  class="h-10 flex-1 rounded-lg border border-gray-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-makro/40 md:w-36 md:flex-none"></select>
+          <button id="next-month" type="button" aria-label="เดือนถัดไป"
+                  class="h-10 w-10 rounded-lg border border-gray-300 text-lg hover:bg-surface">&rsaquo;</button>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button id="today-btn" type="button"
+                  class="rounded-lg bg-makro px-4 py-2 text-sm font-medium text-white hover:bg-makro-dark">ไปวันนี้</button>
+          <button id="print-btn" type="button"
+                  class="rounded-lg border border-gray-300 px-4 py-2 text-sm hover:bg-surface">พิมพ์ตาราง</button>
+          <button id="clear-btn" type="button"
+                  class="rounded-lg border border-makro/40 px-4 py-2 text-sm text-makro hover:bg-makro-light">ล้างทั้งเดือน</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Title + Summary -->
+    <h1 id="period-title" class="mt-6 text-xl font-bold text-ink"></h1>
+    <section id="summary" class="mt-3"></section>
+
+    <!-- Empty hint (no shifts defined) -->
+    <div id="empty-hint" class="no-print mt-4 hidden rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800">
+      ยังไม่มีรูปแบบกะ — ไปที่ <a href="admin.html" class="font-semibold underline">ตั้งค่ากะ</a> เพื่อเพิ่มรูปแบบกะก่อน
+      แล้วจึงกลับมาเลือกกะในตารางได้
+    </div>
+
+    <!-- Day list -->
+    <ul id="day-list" class="mt-4 space-y-2"></ul>
+
+    <p class="no-print mt-8 text-center text-xs text-gray-400">
+      ข้อมูลถูกบันทึกในเบราว์เซอร์ของอุปกรณ์นี้ (LocalStorage) · สำรองข้อมูลได้ที่หน้าตั้งค่ากะ
+    </p>
+  </main>
+
+  <script src="js/store.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
